@@ -128,8 +128,8 @@ web-piano/
 
 ## License
 
-MIT — free to use, modify, and deploy.
+**All Rights Reserved** &copy; 2026 [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)
 
----
+No part of this software may be copied, modified, distributed, or used without the prior written permission of the copyright holder. See [LICENSE](LICENSE) for full terms.
 
-**Developed by [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)**
+For licensing inquiries, contact via [LinkedIn](https://www.linkedin.com/in/jojin-john-74386b34a/).
