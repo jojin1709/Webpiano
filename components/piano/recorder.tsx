@@ -143,7 +143,6 @@ export function Recorder() {
 
   const downloadMp3 = async (rec: Recording) => {
     // Use Tone.js offline rendering to create audio buffer
-    const secPerBeat = 60 / 120;
     const totalDuration = rec.duration + 0.5;
 
     const offline = new Tone.OfflineContext(2, 44100 * totalDuration, 44100);
@@ -168,7 +167,7 @@ export function Recorder() {
     // Convert to MP3 using lamejs
     const lamejs = await import("lamejs");
     const mp3Encoder = new lamejs.Mp3Encoder(1, 44100, 128);
-    const mp3Data: Int8Array[] = [];
+    const mp3Chunks: Uint8Array[] = [];
 
     const chunkSize = 1152;
     for (let i = 0; i < audioData.length; i += chunkSize) {
@@ -180,13 +179,13 @@ export function Recorder() {
         int16[j] = s < 0 ? s * 0x8000 : s * 0x7FFF;
       }
       const mp3buf = mp3Encoder.encodeBuffer(int16);
-      if (mp3buf.length > 0) mp3Data.push(mp3buf);
+      if (mp3buf.length > 0) mp3Chunks.push(new Uint8Array(mp3buf));
     }
 
     const end = mp3Encoder.flush();
-    if (end.length > 0) mp3Data.push(end);
+    if (end.length > 0) mp3Chunks.push(new Uint8Array(end));
 
-    const blob = new Blob(mp3Data, { type: "audio/mp3" });
+    const blob = new Blob(mp3Chunks, { type: "audio/mp3" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
