@@ -1,65 +1,63 @@
+<div align="center">
+
 # Web Piano
 
-A premium, browser-based piano. Play with your computer keyboard, mouse, or touchscreen, learn
-real songs, practice with live scoring, detect chords and scales in real time, and record and
-export your performances — all client-side, no backend required.
+Play piano directly from your keyboard. Learn songs, practice scales, record performances, and master piano online — all free, in your browser.
 
-**Developed by [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)**
+**88 keys. Zero installs. Free forever.**
 
-Built with **Next.js 15 (App Router)**, **TypeScript**, **Tailwind CSS**, **Framer Motion**, and
-**Tone.js**.
+---
+
+<a href="https://webpiano-three.vercel.app/"><img src="https://img.shields.io/badge/LIVE-Web%20Piano-brass?style=for-the-badge&labelColor=08080b&color=c89b5d" alt="Live Demo"></a>
+<a href="https://www.linkedin.com/in/jojin-john-74386b34a/"><img src="https://img.shields.io/badge/Developer-JOJIN%20JOHN-blue?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=08080b" alt="JOJIN JOHN"></a>
+
+</div>
+
+---
 
 ## Features
 
-- **Realistic audio** — sampled grand piano via Tone.js, with a synthesized fallback if samples
-  can't load
-- **Full keyboard support** — computer-keyboard-to-note mapping across two octaves, multi-key
-  chords, sustain pedal (hold <kbd>Space</kbd>)
-- **Switchable piano size** — 49 / 61 / 88 keys
-- **Chord & scale detector** — recognizes major, minor, diminished, augmented, sus2/4, and 7th
-  chords, plus major, minor, pentatonic, blues, and dorian scales
-- **Song library** — 8 songs (Happy Birthday, Twinkle Twinkle, Für Elise, Canon in D, Hedwig's
-  Theme, Interstellar, He's a Pirate, Moonlight Sonata) with searchable list and demo playback
-- **Practice mode** — play-along scoring with accuracy, missed notes, and elapsed time, filterable
-  by difficulty
-- **Learn mode** — six guided interactive lessons from white keys to your first chord and song
-- **Recorder** — record, play back, rename, delete, and export recordings as standard MIDI files
-- **Full control panel** — volume, octave, transpose, tempo, metronome, key labels, fullscreen
-- **Dark / light / system theme**
-- **Fully responsive**, accessible (ARIA labels, visible focus states, keyboard navigable), and
-  SEO-complete (Open Graph, Twitter cards, sitemap, robots, structured data)
+<div align="center">
 
-## Keyboard shortcuts
+| | | |
+|:---:|:---:|:---:|
+| **Keyboard Support** | **Real Piano Sounds** | **Record & Export** |
+| Play with your computer keyboard mapped across two octaves | Sampled from a genuine grand piano | Capture performances and export MIDI files |
+| **Chord Detection** | **Song Library** | **Practice Mode** |
+| See chords and scales in real time | 8 classic songs with demo playback | Play-along scoring with accuracy tracking |
+| **Learn Mode** | **Dark Mode** | **Fully Responsive** |
+| 6 guided interactive lessons | Easy on the eyes for late-night sessions | Works on desktop, tablet, and phone |
 
-| Key | Note | Key | Note |
-| --- | ---- | --- | ---- |
-| A | C | K | C (next octave) |
-| W | C# | O | C# |
-| S | D | L | D |
-| E | D# | P | D# |
-| D | E | ; | E |
-| F | F | | |
-| T | F# | | |
-| G | G | | |
-| Y | G# | | |
-| H | A | | |
-| U | A# | | |
-| J | B | | |
+</div>
 
-The number row (1–7) plus Q/Z/X/C/V/B mirrors the same pattern one octave higher. Hold
-<kbd>Space</kbd> for the sustain pedal. Adjust **Octave** and **Transpose** in the control bar to
-shift the whole mapping up or down.
+---
 
-## Getting started
+## Live Demo
+
+<p align="center">
+  <a href="https://webpiano-three.vercel.app/">
+    <img src="https://webpiano-three.vercel.app/og-image.png" alt="Web Piano - Play Piano Online" width="100%" style="max-width: 900px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://webpiano-three.vercel.app/"><b>Open Web Piano &rarr;</b></a>
+</p>
+
+---
+
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18.18+ (or 20+)
-- npm (or pnpm/yarn)
+- **Node.js 18+**
+- **npm** (or pnpm/yarn)
 
 ### Installation
 
 ```bash
+git clone https://github.com/jojin1709/Webpiano.git
+cd Webpiano
 npm install
 ```
 
@@ -71,65 +69,128 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Production build
+### Production Build
 
 ```bash
 npm run build
 npm start
 ```
 
-## Deployment (Vercel)
+---
 
-This project requires **no environment variables and no backend**. To deploy:
+## How It Works
 
-1. Push this repository to GitHub.
-2. Import it into [Vercel](https://vercel.com/new).
-3. Vercel auto-detects Next.js — click **Deploy**.
+```
+  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+  │  Press a    │     │  Hear real  │     │  Learn &    │
+  │  key        │────▶│  piano      │────▶│  practice   │
+  │             │     │  sound      │     │             │
+  └─────────────┘     └─────────────┘     └──────┬──────┘
+                                                 │
+                                                 ▼
+                                          ┌─────────────┐
+                                          │  Record &   │
+                                          │  export     │
+                                          │  MIDI       │
+                                          └─────────────┘
+```
 
-That's it. Piano samples are fetched client-side from a public audio CDN on first use.
+1. **Press a key** — Use your computer keyboard (A, W, S, E, D...) or click the on-screen keys
+2. **Hear real sound** — Audio samples from a genuine grand piano play instantly
+3. **Learn & practice** — Follow lessons, play songs, or let the chord detector teach you
+4. **Record & export** — Capture your performance and download as a standard MIDI file
 
-## Project structure
+---
+
+## Keyboard Shortcuts
+
+<div align="center">
+
+| Lower Octave | | Upper Octave | |
+|:---:|:---:|:---:|:---:|
+| **A** = C | **K** = C | **1** = C | **7** = B |
+| **W** = C# | **O** = C# | **Q** = C# | **Z** = D# |
+| **S** = D | **L** = D | **2** = D | **X** = F# |
+| **E** = D# | **P** = D# | **3** = D# | **C** = G# |
+| **D** = E | **;** = E | **4** = E | **V** = A# |
+| **F** = F | | **5** = F | |
+| **T** = F# | | **6** = F# | |
+| **G** = G | | **7** = G | |
+| **Y** = G# | | | |
+| **H** = A | | | |
+| **U** = A# | | | |
+| **J** = B | | | |
+
+**Space** = Sustain Pedal
+
+</div>
+
+---
+
+## Tech Stack
+
+<div align="center">
+
+| | |
+|:---:|:---:|
+| **Next.js 15** | App Router, React Server Components |
+| **TypeScript** | Fully typed, no `any` |
+| **Tailwind CSS** | Custom design tokens, dark/light themes |
+| **Framer Motion** | Animations and page transitions |
+| **Tone.js** | Sampled grand piano audio engine |
+
+</div>
+
+---
+
+## Project Structure
 
 ```
 web-piano/
 ├── app/
 │   ├── page.tsx              # Landing page
-│   ├── layout.tsx            # Root layout, fonts, metadata, structured data
-│   ├── globals.css           # Design tokens, glass utilities, focus states
-│   ├── loading.tsx / error.tsx / not-found.tsx
-│   ├── sitemap.ts / robots.ts / favicon.svg
-│   ├── privacy/ terms/ contact/
-│   └── piano/
-│       ├── page.tsx          # Main piano app (tabs: Play/Songs/Practice/Learn/Settings)
-│       └── loading.tsx
+│   ├── layout.tsx            # Root layout, fonts, metadata
+│   ├── piano/
+│   │   └── page.tsx          # Main piano app
+│   ├── contact/ privacy/ terms/
+│   └── globals.css
 ├── components/
-│   ├── landing/              # Hero, features, preview, stats, testimonials, FAQ, footer
-│   ├── piano/                # Keyboard, controls, chord detector, recorder, song library,
-│   │                         # practice mode, learn mode, settings panel
-│   ├── ui/                   # Button, Card, Slider, Accordion, Tabs
-│   ├── theme-provider.tsx / theme-toggle.tsx
+│   ├── landing/              # Hero, features, preview, stats, testimonials, FAQ
+│   ├── piano/                # Keyboard, controls, recorder, song library, lessons
+│   └── ui/                   # Button, Card, Slider, Accordion, Tabs
 ├── lib/
-│   ├── audio-engine.ts       # Tone.js sampler + synth fallback singleton
-│   ├── note-utils.ts         # Note/MIDI/keyboard-mapping utilities
-│   ├── piano-context.tsx     # Global piano state (settings, active notes)
+│   ├── audio-engine.ts       # Tone.js sampler + synth fallback
+│   ├── note-utils.ts         # MIDI/note/keyboard utilities
+│   ├── piano-context.tsx     # Global piano state
 │   ├── songs-data.ts         # Song note sequences
 │   ├── chords.ts             # Chord/scale detection
-│   ├── midi-writer.ts        # Minimal Standard MIDI File writer
-│   └── utils.ts              # `cn` classname helper
+│   └── midi-writer.ts        # Standard MIDI File writer
 └── public/
 ```
 
-## Code quality
+---
 
-- Fully typed TypeScript, no `any` in application code
-- Component-based, reusable UI primitives
-- No placeholder logic — every listed feature (keyboard input, audio, recording, chord
-  detection, practice scoring, MIDI export) is a real, working implementation
+## Deployment
 
-## License
+### Vercel (Recommended)
+
+1. Push to GitHub
+2. Import into [Vercel](https://vercel.com/new)
+3. Click **Deploy** — auto-detects Next.js
+
+No environment variables or backend needed. Piano samples load from a public CDN.
+
+---
+
+<div align="center">
 
 **All Rights Reserved** &copy; 2026 [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)
 
-No part of this software may be copied, modified, distributed, or used without the prior written permission of the copyright holder. See [LICENSE](LICENSE) for full terms.
+No part of this software may be copied, modified, distributed, or used without permission.
+See [LICENSE](LICENSE) for full terms.
 
-For licensing inquiries, contact via [LinkedIn](https://www.linkedin.com/in/jojin-john-74386b34a/).
+---
+
+Built by [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)
+
+</div>
