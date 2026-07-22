@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Play Piano Online",
+  title: "Play Piano Online — Free Virtual Piano Keyboard",
   description:
-    "Play piano directly from your keyboard. Learn songs, practice scales, record performances, and detect chords — all free in your browser.",
+    "Play piano online for free with your computer keyboard. Real piano sounds, 28 songs, chord detection, practice mode, recording, and MIDI/MP3 export. No download required.",
+  keywords: [
+    "play piano online",
+    "virtual piano",
+    "free piano app",
+    "online piano keyboard",
+    "piano practice",
+    "learn piano chords",
+    "record piano online",
+  ],
   openGraph: {
-    title: "Play Piano Online — Web Piano",
+    title: "Play Piano Online — Free Virtual Piano | Web Piano",
     description:
-      "Play piano directly from your keyboard. Learn songs, practice scales, record performances, and detect chords.",
+      "Play piano online with your keyboard. 28 songs, chord detection, recording, and MIDI export. Free in your browser.",
+  },
+  alternates: {
+    canonical: "https://webpiano-three.vercel.app/piano",
   },
 };
