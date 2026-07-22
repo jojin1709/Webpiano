@@ -46,38 +46,6 @@ Play piano directly from your keyboard. Learn songs, practice scales, record per
 
 ---
 
-## Quick Start
-
-### Prerequisites
-
-- **Node.js 18+**
-- **npm** (or pnpm/yarn)
-
-### Installation
-
-```bash
-git clone https://github.com/jojin1709/Webpiano.git
-cd Webpiano
-npm install
-```
-
-### Development
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-### Production Build
-
-```bash
-npm run build
-npm start
-```
-
----
-
 ## How It Works
 
 ```
@@ -140,45 +108,6 @@ npm start
 | **Tone.js** | Sampled grand piano audio engine |
 
 </div>
-
----
-
-## Project Structure
-
-```
-web-piano/
-├── app/
-│   ├── page.tsx              # Landing page
-│   ├── layout.tsx            # Root layout, fonts, metadata
-│   ├── piano/
-│   │   └── page.tsx          # Main piano app
-│   ├── contact/ privacy/ terms/
-│   └── globals.css
-├── components/
-│   ├── landing/              # Hero, features, preview, stats, testimonials, FAQ
-│   ├── piano/                # Keyboard, controls, recorder, song library, lessons
-│   └── ui/                   # Button, Card, Slider, Accordion, Tabs
-├── lib/
-│   ├── audio-engine.ts       # Tone.js sampler + synth fallback
-│   ├── note-utils.ts         # MIDI/note/keyboard utilities
-│   ├── piano-context.tsx     # Global piano state
-│   ├── songs-data.ts         # Song note sequences
-│   ├── chords.ts             # Chord/scale detection
-│   └── midi-writer.ts        # Standard MIDI File writer
-└── public/
-```
-
----
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push to GitHub
-2. Import into [Vercel](https://vercel.com/new)
-3. Click **Deploy** — auto-detects Next.js
-
-No environment variables or backend needed. Piano samples load from a public CDN.
 
 ---
 
