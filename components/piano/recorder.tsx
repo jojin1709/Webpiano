@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Circle, Square, Play, Download, Trash2, Pencil, Clock, Music } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Circle, Square, Play, Download, Trash2, Pencil, Clock, Music, Timer } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePiano } from "@/lib/piano-context";
 import { audioEngine } from "@/lib/audio-engine";
 import { buildMidiFile, RecordedEvent } from "@/lib/midi-writer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Recording {
   id: string;
@@ -18,8 +19,10 @@ interface Recording {
 }
 
 export function Recorder() {
-  const { subscribeActiveNotes } = usePiano();
+  const { subscribeActiveNotes, tempo } = usePiano();
   const [isRecording, setIsRecording] = useState(false);
+  const [countIn, setCountIn] = useState(false);
+  const [countInBeat, setCountInBeat] = useState(0);
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
 
@@ -53,12 +56,39 @@ export function Recorder() {
     });
   }, [isRecording, subscribeActiveNotes]);
 
-  const startRecording = () => {
+  const doStartRecording = useCallback(() => {
     events.current = [];
     openNotes.current.clear();
     startTime.current = performance.now();
     setIsRecording(true);
-  };
+  }, []);
+
+  const startRecording = useCallback(() => {
+    if (!audioEngine.isRunning()) {
+      audioEngine.start().then(() => {
+        setCountIn(true);
+      });
+      return;
+    }
+    setCountIn(true);
+  }, []);
+
+  useEffect(() => {
+    if (!countIn) return;
+    let beat = 0;
+    const ms = (60 / tempo) * 1000;
+    const interval = setInterval(() => {
+      beat++;
+      setCountInBeat(beat);
+      if (beat >= 4) {
+        clearInterval(interval);
+        setCountIn(false);
+        setCountInBeat(0);
+        doStartRecording();
+      }
+    }, ms);
+    return () => clearInterval(interval);
+  }, [countIn, tempo, doStartRecording]);
 
   const stopRecording = () => {
     const now = (performance.now() - startTime.current) / 1000;
@@ -111,6 +141,43 @@ export function Recorder() {
   };
 
   return (
+    <>
+      {/* Count-in overlay */}
+      <AnimatePresence>
+        {countIn && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          >
+            <div className="text-center">
+              <motion.div
+                key={countInBeat}
+                initial={{ scale: 1.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.15 }}
+                className="font-display text-8xl font-bold text-brass-500"
+              >
+                {countInBeat < 4 ? countInBeat + 1 : "GO!"}
+              </motion.div>
+              <div className="mt-4 flex items-center justify-center gap-2">
+                {[0, 1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-3 w-3 rounded-full transition-colors",
+                      i <= countInBeat ? "bg-brass-500" : "bg-white/20"
+                    )}
+                  />
+                ))}
+              </div>
+              <p className="mt-4 text-sm text-ivory-200/60">Get ready to record...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Recorder</CardTitle>
@@ -219,5 +286,6 @@ export function Recorder() {
         )}
       </CardContent>
     </Card>
+    </>
   );
 }

@@ -1,0 +1,19 @@
+{
+  "name": "Web Piano - Play Piano Online",
+  "short_name": "Web Piano",
+  "description": "Play piano directly from your keyboard. Learn songs, practice scales, record performances, and master piano online.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08080b",
+  "theme_color": "#c89b5d",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "education", "entertainment"]
+}

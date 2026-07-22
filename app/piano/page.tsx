@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Settings as SettingsIcon,
   Home,
+  Zap,
 } from "lucide-react";
 import { PianoProvider } from "@/lib/piano-context";
 import { PianoKeyboard } from "@/components/piano/piano-keyboard";
@@ -20,10 +21,11 @@ import { SongLibrary } from "@/components/piano/song-library";
 import { PracticeMode } from "@/components/piano/practice-mode";
 import { LearnMode } from "@/components/piano/learn-mode";
 import { SettingsPanel } from "@/components/piano/settings-panel";
+import { SheetMusic } from "@/components/piano/sheet-music";
+import { MetronomeVisual } from "@/components/piano/metronome-visual";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Tabs } from "@/components/ui/tabs";
 import { Song } from "@/lib/songs-data";
-import { cn } from "@/lib/utils";
 
 type TabId = "play" | "songs" | "practice" | "learn" | "settings";
 
@@ -91,9 +93,11 @@ export default function PianoPage() {
               <div className="grid gap-5 lg:grid-cols-3">
                 <div className="space-y-5 lg:col-span-2">
                   <PianoControls />
+                  <MetronomeVisual />
                   <PianoKeyboard />
                 </div>
                 <div className="space-y-5">
+                  <SheetMusic />
                   <ChordDetector />
                   <Recorder />
                 </div>
@@ -123,6 +127,7 @@ export default function PianoPage() {
                   <PianoKeyboard compact />
                 </div>
                 <div className="space-y-5">
+                  <SheetMusic />
                   <ChordDetector />
                 </div>
               </div>
@@ -135,6 +140,7 @@ export default function PianoPage() {
                   <PianoKeyboard compact />
                 </div>
                 <div className="space-y-5">
+                  <SheetMusic />
                   <ChordDetector />
                 </div>
               </div>

@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { RotateCcw, Target, Trophy, CheckCircle, XCircle } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { RotateCcw, Target, Trophy, CheckCircle, XCircle, Award, Repeat } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SONGS, Song } from "@/lib/songs-data";
 import { usePiano } from "@/lib/piano-context";
+import { getSongProgress, markSongPlayed } from "@/lib/progress-tracker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,11 @@ export function PracticeMode({ initialSong }: { initialSong?: Song }) {
   const [wrongFlash, setWrongFlash] = useState(false);
   const [correctFlash, setCorrectFlash] = useState(false);
 
+  // Loop state
+  const [loopEnabled, setLoopEnabled] = useState(false);
+  const [loopStart, setLoopStart] = useState<number | null>(null);
+  const [loopEnd, setLoopEnd] = useState<number | null>(null);
+
   const startedAt = useRef(0);
   const correctCount = useRef(0);
   const missedCount = useRef(0);
@@ -41,37 +47,57 @@ export function PracticeMode({ initialSong }: { initialSong?: Song }) {
     }
   }, [difficulty, filteredSongs, song.id]);
 
+  const handleNote = useCallback((note: string) => {
+    const expected = song.notes[index]?.note;
+    if (!expected) return;
+
+    if (note === expected) {
+      correctCount.current += 1;
+      setCorrectFlash(true);
+      window.setTimeout(() => setCorrectFlash(false), 200);
+
+      let nextIndex = index + 1;
+
+      // Loop logic
+      if (loopEnabled && loopStart !== null && loopEnd !== null) {
+        if (nextIndex > loopEnd) {
+          nextIndex = loopStart;
+        }
+      }
+
+      setIndex(nextIndex);
+    } else {
+      missedCount.current += 1;
+      setWrongFlash(true);
+      window.setTimeout(() => setWrongFlash(false), 250);
+    }
+  }, [index, song, loopEnabled, loopStart, loopEnd]);
+
   useEffect(() => {
     if (!active) return;
-    return subscribeNotePlayed((note) => {
-      const expected = song.notes[index]?.note;
-      if (!expected) return;
-      if (note === expected) {
-        correctCount.current += 1;
-        setCorrectFlash(true);
-        window.setTimeout(() => setCorrectFlash(false), 200);
-        setIndex((i) => i + 1);
-      } else {
-        missedCount.current += 1;
-        setWrongFlash(true);
-        window.setTimeout(() => setWrongFlash(false), 250);
-      }
-    });
-  }, [active, index, song, subscribeNotePlayed]);
+    return subscribeNotePlayed(handleNote);
+  }, [active, subscribeNotePlayed, handleNote]);
 
   useEffect(() => {
     if (active && index >= song.notes.length) {
       setActive(false);
-      setScore({
+      const finalScore = {
         correct: correctCount.current,
         missed: missedCount.current,
         elapsedMs: Date.now() - startedAt.current,
-      });
+      };
+      setScore(finalScore);
+
+      // Track progress
+      const accuracy = Math.round(
+        (finalScore.correct / Math.max(1, finalScore.correct + finalScore.missed)) * 100
+      );
+      markSongPlayed(song.id, accuracy);
     }
   }, [index, song, active]);
 
   const start = () => {
-    setIndex(0);
+    setIndex(loopStart ?? 0);
     setScore(null);
     correctCount.current = 0;
     missedCount.current = 0;
@@ -81,7 +107,7 @@ export function PracticeMode({ initialSong }: { initialSong?: Song }) {
 
   const reset = () => {
     setActive(false);
-    setIndex(0);
+    setIndex(loopStart ?? 0);
     setScore(null);
   };
 
@@ -90,6 +116,8 @@ export function PracticeMode({ initialSong }: { initialSong?: Song }) {
   const accuracy = score
     ? Math.round((score.correct / Math.max(1, score.correct + score.missed)) * 100)
     : null;
+
+  const songProgress = getSongProgress(song.id);
 
   return (
     <Card>
@@ -136,7 +164,61 @@ export function PracticeMode({ initialSong }: { initialSong?: Song }) {
               <RotateCcw className="h-3.5 w-3.5" /> Reset
             </Button>
           )}
+
+          {/* Loop controls */}
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant={loopEnabled ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => setLoopEnabled(!loopEnabled)}
+              className={cn(
+                "h-8 text-[11px]",
+                loopEnabled && "bg-brass-500/20 text-brass-600 dark:text-brass-400"
+              )}
+            >
+              <Repeat className="h-3 w-3" />
+            </Button>
+            {loopEnabled && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLoopStart(loopStart === index ? null : index)}
+                  className={cn(
+                    "h-8 text-[11px]",
+                    loopStart !== null && "border-brass-500/40 text-brass-600"
+                  )}
+                >
+                  Start
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLoopEnd(loopEnd === index ? null : index)}
+                  className={cn(
+                    "h-8 text-[11px]",
+                    loopEnd !== null && "border-brass-500/40 text-brass-600"
+                  )}
+                >
+                  End
+                </Button>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Song progress badge */}
+        {songProgress && (
+          <div className="mb-3 flex items-center gap-2 text-[11px]">
+            <Award className="h-3.5 w-3.5 text-brass-500" />
+            <span className="text-stage-400 dark:text-ivory-200/40">
+              Best: {songProgress.bestAccuracy}% · Played {songProgress.timesPlayed}x
+              {songProgress.completed && (
+                <span className="ml-1.5 text-emerald-500 font-medium">Completed</span>
+              )}
+            </span>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {active && (
@@ -212,8 +294,7 @@ export function PracticeMode({ initialSong }: { initialSong?: Song }) {
               animate={{ opacity: 1 }}
               className="text-sm text-stage-400 dark:text-ivory-200/35 py-4 text-center"
             >
-              Pick a difficulty and song, then press Start. Play each highlighted note on the
-              keyboard below to advance.
+              Pick a difficulty and song, then press Start. Use the loop button to repeat a section.
             </motion.p>
           )}
         </AnimatePresence>
