@@ -193,7 +193,7 @@ export function Recorder() {
       mp3Chunks.push(copy);
     }
 
-    const blob = new Blob(mp3Chunks, { type: "audio/mp3" });
+    const blob = new Blob(mp3Chunks as BlobPart[], { type: "audio/mp3" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
