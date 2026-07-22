@@ -4,128 +4,109 @@ import { useEffect, useState, useRef } from "react";
 import { usePiano } from "@/lib/piano-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Full note-to-position mapping for treble and bass clef
-const NOTE_POSITIONS: Record<string, { line: number; isBlack: boolean }> = {
-  // Bass clef (below middle C)
-  C2: { line: -8, isBlack: false },
-  "C#2": { line: -8, isBlack: true },
-  D2: { line: -7, isBlack: false },
-  "D#2": { line: -7, isBlack: true },
-  E2: { line: -6, isBlack: false },
-  F2: { line: -5, isBlack: false },
-  "F#2": { line: -5, isBlack: true },
-  G2: { line: -4, isBlack: false },
-  "G#2": { line: -4, isBlack: true },
-  A2: { line: -3, isBlack: false },
-  "A#2": { line: -3, isBlack: true },
-  B2: { line: -2, isBlack: false },
-  C3: { line: -1, isBlack: false },
-  "C#3": { line: -1, isBlack: true },
-  D3: { line: 0, isBlack: false },
-  "D#3": { line: 0, isBlack: true },
-  E3: { line: 1, isBlack: false },
-  F3: { line: 2, isBlack: false },
-  "F#3": { line: 2, isBlack: true },
-  G3: { line: 3, isBlack: false },
-  "G#3": { line: 3, isBlack: true },
-  A3: { line: 4, isBlack: false },
-  "A#3": { line: 4, isBlack: true },
-  B3: { line: 5, isBlack: false },
-  // Treble clef (middle C and above)
-  C4: { line: 6, isBlack: false },
-  "C#4": { line: 6, isBlack: true },
-  D4: { line: 7, isBlack: false },
-  "D#4": { line: 7, isBlack: true },
-  E4: { line: 8, isBlack: false },
-  F4: { line: 9, isBlack: false },
-  "F#4": { line: 9, isBlack: true },
-  G4: { line: 10, isBlack: false },
-  "G#4": { line: 10, isBlack: true },
-  A4: { line: 11, isBlack: false },
-  "A#4": { line: 11, isBlack: true },
-  B4: { line: 12, isBlack: false },
-  C5: { line: 13, isBlack: false },
-  "C#5": { line: 13, isBlack: true },
-  D5: { line: 14, isBlack: false },
-  "D#5": { line: 14, isBlack: true },
-  E5: { line: 15, isBlack: false },
-  F5: { line: 16, isBlack: false },
-  "F#5": { line: 16, isBlack: true },
-  G5: { line: 17, isBlack: false },
-  "G#5": { line: 17, isBlack: true },
-  A5: { line: 18, isBlack: false },
-  "A#5": { line: 18, isBlack: true },
-  B5: { line: 19, isBlack: false },
-  C6: { line: 20, isBlack: false },
+// Note-to-position mapping for treble clef staff
+// Lines: E4(8), G4(10), B4(12), D5(14), F5(16)
+// Spaces: F4(9), A4(11), C5(13), E5(15)
+const NOTE_POSITIONS: Record<string, number> = {
+  // Below staff
+  C4: 6,
+  "C#4": 6,
+  D4: 7,
+  "D#4": 7,
+  E4: 8,
+  F4: 9,
+  "F#4": 9,
+  // On staff
+  G4: 10,
+  "G#4": 10,
+  A4: 11,
+  "A#4": 11,
+  B4: 12,
+  C5: 13,
+  "C#5": 13,
+  D5: 14,
+  "D#5": 14,
+  E5: 15,
+  F5: 16,
+  "F#5": 16,
+  // Above staff
+  G5: 17,
+  "G#5": 17,
+  A5: 18,
+  "A#5": 18,
+  B5: 19,
+  C6: 20,
+  // Lower octave
+  B3: 5,
+  A3: 4,
+  "A#3": 4,
+  G3: 3,
+  "G#3": 3,
+  F3: 2,
+  "F#3": 2,
+  E3: 1,
+  D3: 0,
+  "D#3": 0,
+  C3: -1,
 };
-
-// Staff line positions (relative to note line positions)
-// Treble clef: lines at E4(8), G4(10), B4(12), D5(14), F5(16)
-// Bass clef: lines at G2(-4), B2(-2), D3(0), F3(2), A3(4)
-const TREBLE_LINES = [8, 10, 12, 14, 16];
-const BASS_LINES = [-4, -2, 0, 2, 4];
 
 interface DisplayNote {
   id: string;
   note: string;
-  x: number;
-  y: number;
   line: number;
   isBlack: boolean;
   timestamp: number;
 }
 
+const STAFF_LINES = [8, 10, 12, 14, 16]; // E4, G4, B4, D5, F5
+
 export function SheetMusic() {
-  const { subscribeActiveNotes } = usePiano();
-  const [notes, setNotes] = useState<DisplayNote[]>([]);
-  const activeNotesRef = useRef<Set<string>>(new Set());
-  const noteIdCounter = useRef(0);
+  const { activeNotes } = usePiano();
+  const [displayNotes, setDisplayNotes] = useState<DisplayNote[]>([]);
+  const prevNotesRef = useRef<Set<string>>(new Set());
+  const counterRef = useRef(0);
 
+  // Track newly pressed notes
   useEffect(() => {
-    return subscribeActiveNotes((currentNotes) => {
-      const newSet = new Set(currentNotes);
+    const currentSet = new Set(activeNotes);
 
-      // Find newly pressed notes
-      currentNotes.forEach((note) => {
-        if (!activeNotesRef.current.has(note)) {
-          const pos = NOTE_POSITIONS[note];
-          if (pos) {
-            noteIdCounter.current++;
-            const x = 80 + (noteIdCounter.current % 8) * 25;
-            const y = 140 - pos.line * 8;
-            setNotes((prev) => [
-              ...prev.slice(-12), // Keep last 12 notes
-              {
-                id: `${note}-${noteIdCounter.current}`,
-                note,
-                x,
-                y,
-                line: pos.line,
-                isBlack: pos.isBlack,
-                timestamp: Date.now(),
-              },
-            ]);
-          }
+    // Find notes that are new (in current but not in previous)
+    activeNotes.forEach((note) => {
+      if (!prevNotesRef.current.has(note)) {
+        const line = NOTE_POSITIONS[note];
+        if (line !== undefined) {
+          counterRef.current++;
+          setDisplayNotes((prev) => [
+            ...prev.slice(-15), // Keep last 15 notes
+            {
+              id: `${note}-${counterRef.current}`,
+              note,
+              line,
+              isBlack: note.includes("#"),
+              timestamp: Date.now(),
+            },
+          ]);
         }
-      });
-
-      activeNotesRef.current = newSet;
+      }
     });
-  }, [subscribeActiveNotes]);
 
-  // Clear old notes after 5 seconds
+    prevNotesRef.current = currentSet;
+  }, [activeNotes]);
+
+  // Clear old notes after 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
-      setNotes((prev) => prev.filter((n) => now - n.timestamp < 5000));
-    }, 1000);
+      setDisplayNotes((prev) => prev.filter((n) => now - n.timestamp < 4000));
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
-  const svgWidth = 320;
-  const svgHeight = 200;
+  const svgWidth = 300;
+  const svgHeight = 160;
+  const staffTop = 20;
   const lineSpacing = 8;
-  const staffTop = 40;
+  const staffCenter = staffTop + 60;
 
   return (
     <Card>
@@ -137,141 +118,121 @@ export function SheetMusic() {
           <svg
             viewBox={`0 0 ${svgWidth} ${svgHeight}`}
             className="w-full h-auto"
-            style={{ minHeight: 140 }}
+            style={{ minHeight: 120 }}
           >
             {/* Treble clef staff lines */}
-            {TREBLE_LINES.map((line, i) => {
-              const y = staffTop + 80 - line * lineSpacing;
+            {STAFF_LINES.map((line, i) => {
+              const y = staffCenter - line * lineSpacing;
               return (
                 <line
-                  key={`treble-${i}`}
-                  x1="30"
+                  key={i}
+                  x1="25"
                   y1={y}
-                  x2={svgWidth - 10}
+                  x2={svgWidth - 5}
                   y2={y}
-                  stroke="#ddd"
+                  stroke="#ccc"
                   strokeWidth="1"
                 />
               );
             })}
 
-            {/* Bass clef staff lines */}
-            {BASS_LINES.map((line, i) => {
-              const y = staffTop + 80 - line * lineSpacing;
-              return (
-                <line
-                  key={`bass-${i}`}
-                  x1="30"
-                  y1={y}
-                  x2={svgWidth - 10}
-                  y2={y}
-                  stroke="#ddd"
-                  strokeWidth="1"
-                />
-              );
-            })}
-
-            {/* Middle C ledger line */}
+            {/* Middle C ledger line (C4 = line 6) */}
             <line
-              x1="30"
-              y1={staffTop + 80 - 6 * lineSpacing}
-              x2={svgWidth - 10}
-              y2={staffTop + 80 - 6 * lineSpacing}
-              stroke="#bbb"
+              x1="80"
+              y1={staffCenter - 6 * lineSpacing}
+              x2="140"
+              y2={staffCenter - 6 * lineSpacing}
+              stroke="#ccc"
               strokeWidth="1"
-              strokeDasharray="4,2"
+              strokeDasharray="3,2"
             />
 
             {/* Treble clef symbol */}
             <text
-              x="12"
-              y={staffTop + 80 - 11 * lineSpacing + 12}
-              fontSize="40"
-              fill="#666"
+              x="8"
+              y={staffCenter - 10 * lineSpacing + 14}
+              fontSize="48"
+              fill="#888"
               fontFamily="serif"
             >
               𝄞
             </text>
 
-            {/* Bass clef symbol */}
-            <text
-              x="14"
-              y={staffTop + 80 - 2 * lineSpacing + 6}
-              fontSize="28"
-              fill="#666"
-              fontFamily="serif"
-            >
-              𝄢
-            </text>
-
             {/* Active notes */}
-            {notes.map((n) => (
-              <g key={n.id}>
-                {/* Ledger lines */}
-                {n.line < -4 && (
-                  <line
-                    x1={n.x - 10}
-                    y1={staffTop + 80 - n.line * lineSpacing}
-                    x2={n.x + 10}
-                    y2={staffTop + 80 - n.line * lineSpacing}
-                    stroke="#333"
-                    strokeWidth="1"
-                  />
-                )}
-                {n.line > 16 && (
-                  <line
-                    x1={n.x - 10}
-                    y1={staffTop + 80 - n.line * lineSpacing}
-                    x2={n.x + 10}
-                    y2={staffTop + 80 - n.line * lineSpacing}
-                    stroke="#333"
-                    strokeWidth="1"
-                  />
-                )}
+            {displayNotes.map((n) => {
+              const y = staffCenter - n.line * lineSpacing;
+              const x = 80 + (displayNotes.indexOf(n) % 10) * 20;
 
-                {/* Sharp symbol */}
-                {n.isBlack && (
-                  <text
-                    x={n.x - 12}
-                    y={staffTop + 80 - n.line * lineSpacing + 4}
-                    fontSize="11"
+              return (
+                <g key={n.id}>
+                  {/* Ledger line below staff */}
+                  {n.line <= 5 && (
+                    <line
+                      x1={x - 8}
+                      y1={y}
+                      x2={x + 8}
+                      y2={y}
+                      stroke="#555"
+                      strokeWidth="1"
+                    />
+                  )}
+
+                  {/* Ledger line above staff */}
+                  {n.line >= 17 && (
+                    <line
+                      x1={x - 8}
+                      y1={y}
+                      x2={x + 8}
+                      y2={y}
+                      stroke="#555"
+                      strokeWidth="1"
+                    />
+                  )}
+
+                  {/* Sharp symbol */}
+                  {n.isBlack && (
+                    <text
+                      x={x - 11}
+                      y={y + 4}
+                      fontSize="12"
+                      fill="#333"
+                      fontFamily="serif"
+                    >
+                      ♯
+                    </text>
+                  )}
+
+                  {/* Note head */}
+                  <ellipse
+                    cx={x}
+                    cy={y}
+                    rx="5"
+                    ry="3.5"
                     fill="#333"
-                    fontFamily="serif"
-                  >
-                    #
-                  </text>
-                )}
+                    transform={`rotate(-12, ${x}, ${y})`}
+                  />
 
-                {/* Note head */}
-                <ellipse
-                  cx={n.x}
-                  cy={staffTop + 80 - n.line * lineSpacing}
-                  rx="5.5"
-                  ry="4"
-                  fill="#333"
-                  transform={`rotate(-12, ${n.x}, ${staffTop + 80 - n.line * lineSpacing})`}
-                />
+                  {/* Note stem */}
+                  <line
+                    x1={n.line >= 12 ? x - 4.5 : x + 4.5}
+                    y1={y}
+                    x2={n.line >= 12 ? x - 4.5 : x + 4.5}
+                    y2={n.line >= 12 ? y + 24 : y - 24}
+                    stroke="#333"
+                    strokeWidth="1.2"
+                  />
+                </g>
+              );
+            })}
 
-                {/* Note stem */}
-                <line
-                  x1={n.line % 2 === 0 ? n.x + 5 : n.x - 5}
-                  y1={staffTop + 80 - n.line * lineSpacing}
-                  x2={n.line % 2 === 0 ? n.x + 5 : n.x - 5}
-                  y2={staffTop + 80 - n.line * lineSpacing - 28}
-                  stroke="#333"
-                  strokeWidth="1.2"
-                />
-              </g>
-            ))}
-
-            {/* Empty state */}
-            {notes.length === 0 && (
+            {/* Empty state text */}
+            {displayNotes.length === 0 && (
               <text
                 x={svgWidth / 2}
-                y={svgHeight / 2}
+                y={staffCenter - 20}
                 textAnchor="middle"
                 fontSize="11"
-                fill="#999"
+                fill="#aaa"
                 fontFamily="sans-serif"
               >
                 Play notes to see them here
