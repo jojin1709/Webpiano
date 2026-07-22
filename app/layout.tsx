@@ -33,26 +33,64 @@ export const metadata: Metadata = {
   description:
     "Play piano online for free directly from your keyboard. Learn songs with 28 built-in tracks, practice with scoring, record performances, detect chords in real time, and export as MIDI or MP3 — all in your browser, no download needed.",
   keywords: [
-    "web piano",
+    // Primary keywords
+    "piano",
     "online piano",
+    "piano online",
+    "web piano",
+    "piano web",
+    "play piano",
+    "play piano online",
+    "free piano",
+    "free online piano",
     "virtual piano",
-    "play piano online free",
+    "digital piano online",
+    // Feature keywords
+    "piano keyboard",
+    "piano app",
+    "piano app online",
+    "learn piano",
     "learn piano online",
-    "piano keyboard app",
-    "chord detector",
+    "piano lessons",
     "piano lessons online",
-    "free piano app",
-    "browser piano",
-    "piano practice app",
+    "piano tutorial",
+    "piano practice",
+    "piano practice online",
+    "chord detector",
+    "piano chords",
+    "learn piano chords",
+    "record piano",
     "record piano online",
     "MIDI piano",
-    "piano chords",
-    "music learning app",
-    "piano tutorial",
-    "learn piano chords",
-    "online music instrument",
+    "piano MIDI",
+    "piano sheet music",
+    "piano notes",
+    // Long-tail keywords
+    "play piano online free",
+    "free piano app online",
+    "piano keyboard online free",
+    "learn to play piano online",
     "piano for beginners",
+    "online piano keyboard",
+    "browser piano",
+    "piano in browser",
+    "no download piano",
+    "piano without download",
+    "music app online",
+    "online music instrument",
     "interactive piano",
+    "realistic piano online",
+    // Misspellings & variations
+    "pinano online",
+    "pino online",
+    "piano onlien",
+    "piano onlie",
+    "piano onlin",
+    "pianoo",
+    "piano",
+    "piano app free",
+    "free virtual piano",
+    "online keyboard piano",
   ],
   authors: [{ name: "JOJIN JOHN", url: "https://www.linkedin.com/in/jojin-john-74386b34a/" }],
   creator: "JOJIN JOHN",
@@ -221,6 +259,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="msapplication-TileColor" content="#c89b5d" />
         <meta property="og:site_name" content="Web Piano" />
         <meta property="og:locale" content="en_US" />
+        <meta name="apple-mobile-web-app-status-bar" content="black-translucent" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="canonical" href="https://webpiano-three.vercel.app" />
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
