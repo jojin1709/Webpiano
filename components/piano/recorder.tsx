@@ -142,64 +142,89 @@ export function Recorder() {
   };
 
   const downloadMp3 = async (rec: Recording) => {
-    // Use Tone.js offline rendering to create audio buffer
-    const totalDuration = rec.duration + 0.5;
+    try {
+      // Use Tone.js offline rendering to create audio buffer
+      const totalDuration = rec.duration + 0.5;
+      const sampleRate = 44100;
 
-    const offline = new Tone.OfflineContext(2, 44100 * totalDuration, 44100);
+      const offline = new Tone.OfflineContext(2, sampleRate * totalDuration, sampleRate);
 
-    // Create a synth in the offline context
-    const synth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "triangle" },
-      envelope: { attack: 0.005, decay: 0.3, sustain: 0.15, release: 1 },
-    }).connect(offline.destination);
-    synth.volume.value = -6;
+      // Create a synth in the offline context
+      const synth = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.005, decay: 0.3, sustain: 0.15, release: 1 },
+      }).connect(offline.destination);
+      synth.volume.value = -6;
 
-    // Schedule all notes
-    rec.events.forEach((e) => {
-      const duration = Math.max(0.1, e.endTime - e.startTime);
-      synth.triggerAttackRelease(e.note, duration, e.startTime, e.velocity);
-    });
+      // Schedule all notes
+      rec.events.forEach((e) => {
+        const duration = Math.max(0.1, e.endTime - e.startTime);
+        synth.triggerAttackRelease(e.note, duration, e.startTime, e.velocity);
+      });
 
-    // Render
-    const buffer = await offline.render();
-    const audioData = buffer.getChannelData(0);
+      // Render
+      const buffer = await offline.render();
+      const audioData = buffer.getChannelData(0);
 
-    // Convert to MP3 using lamejs
-    const lamejs = await import("lamejs");
-    const mp3Encoder = new lamejs.Mp3Encoder(1, 44100, 128);
-    const mp3Chunks: Uint8Array[] = [];
-
-    const chunkSize = 1152;
-    for (let i = 0; i < audioData.length; i += chunkSize) {
-      const chunk = audioData.slice(i, i + chunkSize);
-      const float32 = new Float32Array(chunk);
-      const int16 = new Int16Array(float32.length);
-      for (let j = 0; j < float32.length; j++) {
-        const s = Math.max(-1, Math.min(1, float32[j]));
-        int16[j] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      // Convert float32 to int16
+      const int16Data = new Int16Array(audioData.length);
+      for (let i = 0; i < audioData.length; i++) {
+        const s = Math.max(-1, Math.min(1, audioData[i]));
+        int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
       }
-      const mp3buf = mp3Encoder.encodeBuffer(int16);
-      if (mp3buf.length > 0) {
-        const copy = new Uint8Array(mp3buf.length);
-        copy.set(mp3buf);
+
+      // Convert to MP3 using lamejs
+      const lamejs = await import("lamejs");
+      const mp3Encoder = new lamejs.Mp3Encoder(1, sampleRate, 128);
+      const mp3Chunks: Uint8Array[] = [];
+
+      // lamejs expects 1152 samples at a time
+      const chunkSize = 1152;
+      for (let i = 0; i < int16Data.length; i += chunkSize) {
+        const chunk = int16Data.subarray(i, Math.min(i + chunkSize, int16Data.length));
+        const mp3buf = mp3Encoder.encodeBuffer(chunk);
+        if (mp3buf && mp3buf.length > 0) {
+          const copy = new Uint8Array(mp3buf.length);
+          copy.set(mp3buf);
+          mp3Chunks.push(copy);
+        }
+      }
+
+      // Flush remaining data
+      const endBuf = mp3Encoder.flush();
+      if (endBuf && endBuf.length > 0) {
+        const copy = new Uint8Array(endBuf.length);
+        copy.set(endBuf);
         mp3Chunks.push(copy);
       }
-    }
 
-    const end = mp3Encoder.flush();
-    if (end.length > 0) {
-      const copy = new Uint8Array(end.length);
-      copy.set(end);
-      mp3Chunks.push(copy);
-    }
+      if (mp3Chunks.length === 0) {
+        console.error("No MP3 data generated");
+        return;
+      }
 
-    const blob = new Blob(mp3Chunks as BlobPart[], { type: "audio/mp3" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${rec.name.replace(/\s+/g, "-").toLowerCase()}.mp3`;
-    a.click();
-    URL.revokeObjectURL(url);
+      // Combine all chunks
+      const totalLength = mp3Chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+      const mp3Data = new Uint8Array(totalLength);
+      let offset = 0;
+      for (const chunk of mp3Chunks) {
+        mp3Data.set(chunk, offset);
+        offset += chunk.length;
+      }
+
+      const blob = new Blob([mp3Data.buffer], { type: "audio/mpeg" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${rec.name.replace(/\s+/g, "-").toLowerCase()}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to export MP3:", error);
+      alert("Failed to export MP3. Please try MIDI or JSON format instead.");
+    }
   };
 
   const downloadJson = (rec: Recording) => {
