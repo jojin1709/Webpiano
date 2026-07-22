@@ -24,7 +24,7 @@ Play piano directly from your keyboard. Learn songs, practice scales, record per
 | **Keyboard Support** | **Real Piano Sounds** | **MIDI Keyboard Input** |
 | Play with your computer keyboard mapped across two octaves | Sampled from a genuine grand piano | Connect a real USB/MIDI keyboard |
 | **Record & Export** | **Sheet Music Display** | **28 Songs** |
-| Capture performances and export MIDI files | See notes on a treble clef staff as you play | Easy to Master difficulty levels |
+| Capture performances and export as MIDI, MP3, JSON, or CSV | See notes on a treble clef staff as you play | Easy to Master difficulty levels |
 | **Chord Detection** | **Practice Mode** | **Loop Practice** |
 | See chords and scales in real time | Play-along scoring with accuracy tracking | Loop any section to practice repeatedly |
 | **Metronome** | **Count-in Recording** | **Progress Tracker** |
