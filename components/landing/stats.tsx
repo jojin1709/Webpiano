@@ -5,7 +5,7 @@ import { Music, BookOpen, Zap, Smartphone } from "lucide-react";
 
 const STATS = [
   { icon: Music, value: "88", label: "Keys available", suffix: "" },
-  { icon: BookOpen, value: "8", label: "Songs to learn", suffix: "" },
+  { icon: BookOpen, value: "28", label: "Songs to learn", suffix: "" },
   { icon: Zap, value: "100", label: "Free forever", suffix: "%" },
   { icon: Smartphone, value: "3", label: "Screen sizes", suffix: "" },
 ];

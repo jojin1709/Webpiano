@@ -33,10 +33,6 @@ export function getSongProgress(songId: string): SongProgress | null {
   return progress[songId] || null;
 }
 
-export function getAllProgress(): ProgressMap {
-  return loadProgress();
-}
-
 export function markSongPlayed(songId: string, accuracy: number) {
   const progress = loadProgress();
   const existing = progress[songId];
@@ -49,19 +45,4 @@ export function markSongPlayed(songId: string, accuracy: number) {
   };
 
   saveProgress(progress);
-}
-
-export function getCompletedCount(): number {
-  const progress = loadProgress();
-  return Object.values(progress).filter((p) => p.completed).length;
-}
-
-export function getTotalSongsPlayed(): number {
-  const progress = loadProgress();
-  return Object.keys(progress).length;
-}
-
-export function resetProgress() {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(STORAGE_KEY);
 }

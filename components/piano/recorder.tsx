@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Circle, Square, Play, Download, Trash2, Pencil, Clock, Music, Timer } from "lucide-react";
+import { Circle, Square, Play, Download, Trash2, Pencil, Clock, Music } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePiano } from "@/lib/piano-context";
 import { audioEngine } from "@/lib/audio-engine";

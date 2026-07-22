@@ -32,7 +32,7 @@ const FEATURES = [
   {
     icon: BookOpen,
     title: "Learn Songs",
-    description: "Eight classic pieces with demo playback and a searchable library.",
+    description: "28 classic pieces across 4 difficulty levels with demo playback and a searchable library.",
   },
   {
     icon: Wand2,
