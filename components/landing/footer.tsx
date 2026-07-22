@@ -34,9 +34,10 @@ export function Footer() {
           <div>
             <p className="mb-4 text-[11px] font-medium uppercase tracking-wider text-stage-400 dark:text-ivory-200/30">Resources</p>
             <ul className="space-y-2.5 text-sm text-stage-500 dark:text-ivory-200/50">
+              <li><Link href="/learn" className="hover:text-brass-500 transition-colors">Learn Piano</Link></li>
+              <li><Link href="/about" className="hover:text-brass-500 transition-colors">About</Link></li>
               <li><a href="#features" className="hover:text-brass-500 transition-colors">Features</a></li>
               <li><a href="#faq" className="hover:text-brass-500 transition-colors">FAQ</a></li>
-              <li><a href="#songs" className="hover:text-brass-500 transition-colors">Preview</a></li>
             </ul>
           </div>
 
