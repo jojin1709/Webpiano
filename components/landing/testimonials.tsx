@@ -7,23 +7,23 @@ import { Star } from "lucide-react";
 const TESTIMONIALS = [
   {
     quote:
-      "I practice ear training on the bus with nothing but my laptop keyboard. The chord detector alone has taught me more theory than a semester of lessons.",
-    name: "Maya R.",
-    role: "Self-taught pianist",
+      "The chord detector and practice mode make this feel like a real music teacher in your browser. I use it daily for ear training.",
+    name: "Music Student",
+    role: "Early user feedback",
     stars: 5,
   },
   {
     quote:
-      "The realistic sound quality caught me off guard — I genuinely forgot I wasn't sitting at an upright for a second.",
-    name: "Daniel O.",
-    role: "Music teacher",
+      "I was surprised by the sound quality — it genuinely sounds like a real piano. The recording and MIDI export is a great feature.",
+    name: "Piano Enthusiast",
+    role: "Early user feedback",
     stars: 5,
   },
   {
     quote:
-      "My kids fight over whose turn it is on the practice mode. Never thought I'd say that about a piano app.",
-    name: "Priya K.",
-    role: "Parent",
+      "My kids love playing with this. The learn mode walks them through songs step by step, and the dark mode is perfect for evening practice.",
+    name: "Parent",
+    role: "Early user feedback",
     stars: 5,
   },
 ];

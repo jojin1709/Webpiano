@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Search, Play, Square, Music } from "lucide-react";
 import { motion } from "framer-motion";
+import * as Tone from "tone";
 import { SONGS, Song } from "@/lib/songs-data";
 import { audioEngine } from "@/lib/audio-engine";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +20,7 @@ const difficultyColor: Record<Song["difficulty"], string> = {
 export function SongLibrary({ onPractice }: { onPractice?: (song: Song) => void }) {
   const [query, setQuery] = useState("");
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const timers = useMemo(() => new Set<number>(), []);
+  const playTimeouts = useRef<number[]>([]);
 
   const filtered = SONGS.filter(
     (s) =>
@@ -28,8 +29,10 @@ export function SongLibrary({ onPractice }: { onPractice?: (song: Song) => void 
   );
 
   const stop = () => {
-    timers.forEach((t) => window.clearTimeout(t));
-    timers.clear();
+    playTimeouts.current.forEach((t) => window.clearTimeout(t));
+    playTimeouts.current = [];
+    Tone.getTransport().stop();
+    Tone.getTransport().cancel();
     setPlayingId(null);
   };
 
@@ -37,18 +40,26 @@ export function SongLibrary({ onPractice }: { onPractice?: (song: Song) => void 
     stop();
     if (!audioEngine.isRunning()) await audioEngine.start();
     setPlayingId(song.id);
-    const secPerBeat = 60 / song.bpm;
+
+    Tone.getTransport().bpm.value = song.bpm;
+    Tone.getTransport().start();
+
     let t = 0;
     song.notes.forEach((n) => {
-      const time = t;
+      const noteTime = t;
+      const duration = n.beats * (60 / song.bpm) * 0.92;
       const id = window.setTimeout(() => {
-        audioEngine.playNoteFor(n.note, n.beats * secPerBeat * 0.92, 0.8);
-      }, time * 1000);
-      timers.add(id);
-      t += n.beats * secPerBeat;
+        audioEngine.playNoteFor(n.note, duration, 0.8);
+      }, noteTime * 1000);
+      playTimeouts.current.push(id);
+      t += n.beats * (60 / song.bpm);
     });
-    const endId = window.setTimeout(() => setPlayingId(null), t * 1000 + 150);
-    timers.add(endId);
+
+    const endId = window.setTimeout(() => {
+      Tone.getTransport().stop();
+      setPlayingId(null);
+    }, t * 1000 + 150);
+    playTimeouts.current.push(endId);
   };
 
   return (

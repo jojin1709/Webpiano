@@ -124,7 +124,3 @@ export const SONGS: Song[] = [
     ],
   },
 ];
-
-export function findSong(id: string): Song | undefined {
-  return SONGS.find((s) => s.id === id);
-}

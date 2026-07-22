@@ -70,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Web Piano",
+    url: SITE_URL,
     applicationCategory: "MusicApplication",
     operatingSystem: "Any (web browser)",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

@@ -3,6 +3,6 @@ import { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: "https://web-piano.vercel.app/sitemap.xml",
+    sitemap: "https://webpiano-three.vercel.app/sitemap.xml",
   };
 }
