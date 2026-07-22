@@ -4,6 +4,8 @@ A premium, browser-based piano. Play with your computer keyboard, mouse, or touc
 real songs, practice with live scoring, detect chords and scales in real time, and record and
 export your performances — all client-side, no backend required.
 
+**Developed by [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)**
+
 Built with **Next.js 15 (App Router)**, **TypeScript**, **Tailwind CSS**, **Framer Motion**, and
 **Tone.js**.
 
@@ -127,3 +129,7 @@ web-piano/
 ## License
 
 MIT — free to use, modify, and deploy.
+
+---
+
+**Developed by [JOJIN JOHN](https://www.linkedin.com/in/jojin-john-74386b34a/)**
