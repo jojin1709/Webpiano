@@ -167,7 +167,7 @@ export function Recorder() {
     // Convert to MP3 using lamejs
     const lamejs = await import("lamejs");
     const mp3Encoder = new lamejs.Mp3Encoder(1, 44100, 128);
-    const mp3Chunks: ArrayBuffer[] = [];
+    const mp3Chunks: Uint8Array[] = [];
 
     const chunkSize = 1152;
     for (let i = 0; i < audioData.length; i += chunkSize) {
@@ -180,13 +180,17 @@ export function Recorder() {
       }
       const mp3buf = mp3Encoder.encodeBuffer(int16);
       if (mp3buf.length > 0) {
-        mp3Chunks.push(mp3buf.buffer.slice(mp3buf.byteOffset, mp3buf.byteOffset + mp3buf.byteLength));
+        const copy = new Uint8Array(mp3buf.length);
+        copy.set(mp3buf);
+        mp3Chunks.push(copy);
       }
     }
 
     const end = mp3Encoder.flush();
     if (end.length > 0) {
-      mp3Chunks.push(end.buffer.slice(end.byteOffset, end.byteOffset + end.byteLength));
+      const copy = new Uint8Array(end.length);
+      copy.set(end);
+      mp3Chunks.push(copy);
     }
 
     const blob = new Blob(mp3Chunks, { type: "audio/mp3" });
