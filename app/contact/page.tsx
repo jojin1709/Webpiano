@@ -39,7 +39,7 @@ export default function ContactPage() {
           </a>
 
           <a
-            href="https://github.com/anthropics/claude-code/issues"
+            href="https://github.com/jojin1709/Webpiano/issues"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-4 rounded-2xl border border-black/[0.06] dark:border-white/[0.08] bg-white/70 dark:bg-stage-800/50 px-6 py-5 transition-all hover:border-brass-500/30 hover:shadow-lg hover:shadow-brass-500/5"
