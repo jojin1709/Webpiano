@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Circle, Square, Play, Download, Trash2, Pencil, Clock, Music } from "lucide-react";
+import { Circle, Square, Play, Download, Trash2, Pencil, Clock, Music, ChevronDown, FileAudio, FileText, FileCode } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePiano } from "@/lib/piano-context";
 import { audioEngine } from "@/lib/audio-engine";
@@ -18,6 +18,14 @@ interface Recording {
   createdAt: number;
 }
 
+type DownloadFormat = "midi" | "json" | "csv";
+
+const FORMAT_OPTIONS: { value: DownloadFormat; label: string; icon: React.ElementType; ext: string }[] = [
+  { value: "midi", label: "MIDI (.mid)", icon: FileAudio, ext: ".mid" },
+  { value: "json", label: "JSON (.json)", icon: FileCode, ext: ".json" },
+  { value: "csv", label: "CSV (.csv)", icon: FileText, ext: ".csv" },
+];
+
 export function Recorder() {
   const { subscribeActiveNotes, tempo } = usePiano();
   const [isRecording, setIsRecording] = useState(false);
@@ -25,6 +33,7 @@ export function Recorder() {
   const [countInBeat, setCountInBeat] = useState(0);
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const startTime = useRef(0);
   const openNotes = useRef<Map<string, number>>(new Map());
@@ -120,7 +129,7 @@ export function Recorder() {
     window.setTimeout(() => setPlayingId(null), rec.duration * 1000 + 200);
   };
 
-  const download = (rec: Recording) => {
+  const downloadMidi = (rec: Recording) => {
     const blob = buildMidiFile(rec.events, 120);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -128,6 +137,51 @@ export function Recorder() {
     a.download = `${rec.name.replace(/\s+/g, "-").toLowerCase()}.mid`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const downloadJson = (rec: Recording) => {
+    const data = {
+      name: rec.name,
+      duration: rec.duration,
+      bpm: 120,
+      notes: rec.events.map((e) => ({
+        note: e.note,
+        startTime: Math.round(e.startTime * 1000) / 1000,
+        endTime: Math.round(e.endTime * 1000) / 1000,
+        duration: Math.round((e.endTime - e.startTime) * 1000) / 1000,
+        velocity: e.velocity,
+      })),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${rec.name.replace(/\s+/g, "-").toLowerCase()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadCsv = (rec: Recording) => {
+    const header = "Note,Start (s),End (s),Duration (s),Velocity\n";
+    const rows = rec.events
+      .map((e) => `${e.note},${e.startTime.toFixed(3)},${e.endTime.toFixed(3)},${(e.endTime - e.startTime).toFixed(3)},${e.velocity.toFixed(2)}`)
+      .join("\n");
+    const blob = new Blob([header + rows], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${rec.name.replace(/\s+/g, "-").toLowerCase()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const download = (rec: Recording, format: DownloadFormat) => {
+    setOpenMenu(null);
+    switch (format) {
+      case "midi": downloadMidi(rec); break;
+      case "json": downloadJson(rec); break;
+      case "csv": downloadCsv(rec); break;
+    }
   };
 
   const rename = (id: string) => {
@@ -252,15 +306,49 @@ export function Recorder() {
                   >
                     <Play className="h-3.5 w-3.5" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Download as MIDI"
-                    onClick={() => download(rec)}
-                    className="h-8 w-8"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                  </Button>
+
+                  {/* Download with format selector */}
+                  <div className="relative">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Download recording"
+                      onClick={() => setOpenMenu(openMenu === rec.id ? null : rec.id)}
+                      className="h-8 w-8"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                    </Button>
+
+                    <AnimatePresence>
+                      {openMenu === rec.id && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 top-full z-50 mt-1 w-40 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-stage-800 shadow-xl overflow-hidden"
+                        >
+                          <p className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-stage-400 dark:text-ivory-200/30 border-b border-black/5 dark:border-white/5">
+                            Download as
+                          </p>
+                          {FORMAT_OPTIONS.map((opt) => {
+                            const Icon = opt.icon;
+                            return (
+                              <button
+                                key={opt.value}
+                                onClick={() => download(rec, opt.value)}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-stage-700 dark:text-ivory-200/80 hover:bg-brass-500/10 transition-colors"
+                              >
+                                <Icon className="h-3.5 w-3.5 text-brass-500" />
+                                {opt.label}
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   <Button
                     variant="ghost"
                     size="icon"
