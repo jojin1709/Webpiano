@@ -36,7 +36,7 @@ Play piano directly from your keyboard. Learn songs, practice scales, record per
 
 <p align="center">
   <a href="https://webpiano-three.vercel.app/">
-    <img src="https://webpiano-three.vercel.app/og-image.png" alt="Web Piano - Play Piano Online" width="100%" style="max-width: 900px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+    <img src="./public/screenshot.png" alt="Web Piano - Play Piano Online" width="100%" style="max-width: 900px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
   </a>
 </p>
 
