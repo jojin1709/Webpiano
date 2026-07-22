@@ -1,12 +1,26 @@
-import { audioEngine } from "./audio-engine";
 import { midiToNote } from "./note-utils";
 
 type MidiNoteCallback = (note: string, velocity: number) => void;
 type MidiNoteOffCallback = (note: string) => void;
 
+interface MIDIAccess {
+  inputs: Map<string, MIDIInput>;
+  onstatechange: ((event: unknown) => void) | null;
+}
+
+interface MIDIInput {
+  id: string;
+  name: string | null;
+  onmidimessage: ((event: MIDIMessageEvent) => void) | null;
+}
+
+interface MIDIMessageEvent {
+  data: Uint8Array | null;
+}
+
 class MidiInput {
-  private midiAccess: WebMidi.MIDIAccess | null = null;
-  private activeInput: WebMidi.MIDIInput | null = null;
+  private midiAccess: MIDIAccess | null = null;
+  private activeInput: MIDIInput | null = null;
   private onNoteOn: MidiNoteCallback | null = null;
   private onNoteOff: MidiNoteOffCallback | null = null;
   private _connected = false;
@@ -29,12 +43,13 @@ class MidiInput {
   }
 
   async requestAccess(): Promise<boolean> {
-    if (!navigator.requestMIDIAccess) {
+    const nav = navigator as unknown as { requestMIDIAccess?: (options?: { sysex?: boolean }) => Promise<MIDIAccess> };
+    if (!nav.requestMIDIAccess) {
       console.warn("Web MIDI API not supported in this browser");
       return false;
     }
     try {
-      this.midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+      this.midiAccess = await nav.requestMIDIAccess({ sysex: false });
       this.midiAccess.onstatechange = () => this.handleStateChange();
       this.autoConnect();
       return true;
@@ -78,7 +93,7 @@ class MidiInput {
     this.onNoteOff = callbackOff;
   }
 
-  private handleMidiMessage(event: WebMidi.MIDIMessageEvent) {
+  private handleMidiMessage(event: MIDIMessageEvent) {
     const data = event.data;
     if (!data || data.length < 3) return;
 

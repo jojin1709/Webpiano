@@ -21,12 +21,18 @@ Play piano directly from your keyboard. Learn songs, practice scales, record per
 
 | | | |
 |:---:|:---:|:---:|
-| **Keyboard Support** | **Real Piano Sounds** | **Record & Export** |
-| Play with your computer keyboard mapped across two octaves | Sampled from a genuine grand piano | Capture performances and export MIDI files |
-| **Chord Detection** | **Song Library** | **Practice Mode** |
-| See chords and scales in real time | 8 classic songs with demo playback | Play-along scoring with accuracy tracking |
-| **Learn Mode** | **Dark Mode** | **Fully Responsive** |
-| 6 guided interactive lessons | Easy on the eyes for late-night sessions | Works on desktop, tablet, and phone |
+| **Keyboard Support** | **Real Piano Sounds** | **MIDI Keyboard Input** |
+| Play with your computer keyboard mapped across two octaves | Sampled from a genuine grand piano | Connect a real USB/MIDI keyboard |
+| **Record & Export** | **Sheet Music Display** | **28 Songs** |
+| Capture performances and export MIDI files | See notes on a treble clef staff as you play | Easy to Master difficulty levels |
+| **Chord Detection** | **Practice Mode** | **Loop Practice** |
+| See chords and scales in real time | Play-along scoring with accuracy tracking | Loop any section to practice repeatedly |
+| **Metronome** | **Count-in Recording** | **Progress Tracker** |
+| Audio click + visual beat flash | 4-beat countdown before recording | Save best scores and completion status |
+| **Learn Mode** | **PWA / Installable** | **Dark Mode** |
+| 6 guided interactive lessons | Install as app on phone or desktop | Easy on the eyes for late-night sessions |
+| **Fully Responsive** | | |
+| Works on desktop, tablet, and phone | | |
 
 </div>
 
@@ -70,6 +76,21 @@ Play piano directly from your keyboard. Learn songs, practice scales, record per
 
 ---
 
+## Song Library (28 Songs)
+
+<div align="center">
+
+| Difficulty | Songs |
+|:---:|:---|
+| **Easy** | Happy Birthday, Twinkle Twinkle, Mary Had a Little Lamb, Jingle Bells, Ode to Joy, London Bridge, Row Your Boat, Brahms' Lullaby, Minuet in G, Amazing Grace |
+| **Medium** | Canon in D, Hedwig's Theme, Interstellar, River Flows in You, Clair de Lune, Clocks, Moonlight Sonata Theme |
+| **Hard** | Für Elise, He's a Pirate, Moonlight Sonata, Star Wars, Nokia Ringtone, Take On Me |
+| **Master** | Flight of the Bumblebee, Nocturne Op.9 No.2, Turkish March, The Entertainer, La Vie en Rose |
+
+</div>
+
+---
+
 ## Keyboard Shortcuts
 
 <div align="center">
@@ -106,6 +127,7 @@ Play piano directly from your keyboard. Learn songs, practice scales, record per
 | **Tailwind CSS** | Custom design tokens, dark/light themes |
 | **Framer Motion** | Animations and page transitions |
 | **Tone.js** | Sampled grand piano audio engine |
+| **Web MIDI API** | Real MIDI keyboard support |
 
 </div>
 
